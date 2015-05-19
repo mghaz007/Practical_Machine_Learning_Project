@@ -20,61 +20,10 @@ For this assignment, we analyzed the provided data to predict whether or not an 
 
 ```r
 library(Hmisc)
-```
-
-```
-## Loading required package: grid
-## Loading required package: lattice
-## Loading required package: survival
-## Loading required package: Formula
-## Loading required package: ggplot2
-## 
-## Attaching package: 'Hmisc'
-## 
-## The following objects are masked from 'package:base':
-## 
-##     format.pval, round.POSIXt, trunc.POSIXt, units
-```
-
-```r
 library(caret)
-```
-
-```
-## 
-## Attaching package: 'caret'
-## 
-## The following object is masked from 'package:survival':
-## 
-##     cluster
-```
-
-```r
 library(randomForest)
-```
-
-```
-## randomForest 4.6-10
-## Type rfNews() to see new features/changes/bug fixes.
-## 
-## Attaching package: 'randomForest'
-## 
-## The following object is masked from 'package:Hmisc':
-## 
-##     combine
-```
-
-```r
 library(foreach)
 library(doParallel)
-```
-
-```
-## Loading required package: iterators
-## Loading required package: parallel
-```
-
-```r
 set.seed(2048)
 options(warn=-1)
 ```
@@ -220,10 +169,10 @@ confusionMatrix(predictions2,testing$classe)
 ## 
 ##           Reference
 ## Prediction    A    B    C    D    E
-##          A 1395    4    0    0    0
-##          B    0  942    6    0    0
-##          C    0    3  848    9    2
-##          D    0    0    1  795    2
+##          A 1395    5    0    0    0
+##          B    0  941    6    0    0
+##          C    0    3  848    8    2
+##          D    0    0    1  796    2
 ##          E    0    0    0    0  897
 ## 
 ## Overall Statistics
@@ -239,14 +188,14 @@ confusionMatrix(predictions2,testing$classe)
 ## Statistics by Class:
 ## 
 ##                      Class: A Class: B Class: C Class: D Class: E
-## Sensitivity            1.0000   0.9926   0.9918   0.9888   0.9956
-## Specificity            0.9989   0.9985   0.9965   0.9993   1.0000
-## Pos Pred Value         0.9971   0.9937   0.9838   0.9962   1.0000
-## Neg Pred Value         1.0000   0.9982   0.9983   0.9978   0.9990
+## Sensitivity            1.0000   0.9916   0.9918   0.9900   0.9956
+## Specificity            0.9986   0.9985   0.9968   0.9993   1.0000
+## Pos Pred Value         0.9964   0.9937   0.9849   0.9962   1.0000
+## Neg Pred Value         1.0000   0.9980   0.9983   0.9981   0.9990
 ## Prevalence             0.2845   0.1935   0.1743   0.1639   0.1837
-## Detection Rate         0.2845   0.1921   0.1729   0.1621   0.1829
-## Detection Prevalence   0.2853   0.1933   0.1758   0.1627   0.1829
-## Balanced Accuracy      0.9994   0.9956   0.9942   0.9940   0.9978
+## Detection Rate         0.2845   0.1919   0.1729   0.1623   0.1829
+## Detection Prevalence   0.2855   0.1931   0.1756   0.1629   0.1829
+## Balanced Accuracy      0.9993   0.9950   0.9943   0.9947   0.9978
 ```
 
 ### Test Cases Submission
@@ -283,6 +232,6 @@ pml_write_files(answers)
 
 ### Conclusions 
 
-As can be seen from the prediction performance measures, such as the confusion matrix, the implmented model is very accurate. For test data, we achieved a 100% accuracy, where in fact correct all test cases were predicted correctly. We shold not that we explored various prediction models, such as the PCA, but we did not get as good of accuracy. 
+As can be seen from the prediction performance measures, such as the confusion matrix, the implmented model is very accurate. For test data, we expected to get 99% accuracy, but in fact we achieved a 100% accuracy, where in fact correct all test cases were predicted correctly. We shold not that we explored various prediction models, such as the PCA, but we did not get as good of accuracy. 
 
 

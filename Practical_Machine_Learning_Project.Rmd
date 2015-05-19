@@ -139,6 +139,6 @@ pml_write_files(answers)
 
 ### Conclusions 
 
-As can be seen from the prediction performance measures, such as the confusion matrix, the implmented model is very accurate. For test data, we achieved a 100% accuracy, where in fact correct all test cases were predicted correctly. We shold not that we explored various prediction models, such as the PCA, but we did not get as good of accuracy. 
+As can be seen from the prediction performance measures, such as the confusion matrix, the implmented model is very accurate. For test data, we expected to get 99% accuracy, but in fact we achieved a 100% accuracy, where in fact correct all test cases were predicted correctly. We shold not that we explored various prediction models, such as the PCA, but we did not get as good of accuracy. 
 
 
