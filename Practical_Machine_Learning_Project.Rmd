@@ -1,0 +1,144 @@
+---
+title: "Practical Machine Learning: Course Project"
+author: mghaz007
+date: May 19th, 2015
+header-includes:
+   - \usepackage{bbm}
+output:
+  html_document:
+    keep_md: true
+    css: style.css
+  pdf_document:
+    toc: false
+    highlight: zenburn
+    latex_engine: xelatex
+---
+\fontsize{12}{16}
+\fontseries{a}
+\selectfont
+
+
+## Prediction of Correct/Incorrect Barbell Lifting 
+
+
+### 1. Executive Summary
+
+In this project, the goal is to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants in order to predict whether they perform barbell lifts correctly or incorrectly. In the experiment, the participants were asked to perform barbell lifts correctly and incorrectly in 5 different ways. Whethe ror not the exercise was performed correctly is the "class" variable in the training set. We explored the use of various explanatory attributes to predict class variable. This report describes how we built our prediction model, how we applied cross validation, our assessment of the expected out of sample error is, and explaination the implemented choices. In the end, we also applied our prediction model to predict 20 different test cases and siubmitted the results. 
+
+### 2. Machine Learning Algorithms
+
+For this assignment, we analyzed the provided data to predict whether or not an individual has performed barbell lifts correctly. To accomplish this, we applied two machine learning algorithms: caret and randomForest algorithms. These two algorithms yield perfect predictions and correct answers for each of the 20 test data cases provided in this assignment. In order to be able to reproduce the results, an initial seed for the random number generator was set. 
+
+```{r}
+library(Hmisc)
+library(caret)
+library(randomForest)
+library(foreach)
+library(doParallel)
+set.seed(2048)
+options(warn=-1)
+```
+
+### 3. Reading and Preparing and Cleaning the Data
+
+The provided training and test data sets were first read. We conducted an initial data preparation and cleaning of the input data, which involved the following operations:
+
+* Some values contained a "#DIV/0!", which were replaced with an NA value, as follows:
+
+```{r}
+training_data <- read.csv("./data/pml-training.csv", na.strings=c("#DIV/0!") )
+evaluation_data <- read.csv("./data/pml-testing.csv", na.strings=c("#DIV/0!") )
+```
+
+* We also casted all columns from the 8th column to the end to be numeric, as follows:
+
+```{r}
+for(i in c(8:ncol(training_data)-1)) {training_data[,i] = as.numeric(as.character(training_data[,i]))}
+
+for(i in c(8:ncol(evaluation_data)-1)) {evaluation_data[,i] = as.numeric(as.character(evaluation_data[,i]))}
+```
+
+* We ensured that some columns, which are mostly blank did not contribute to the prediction, by selecting a feature set that only included complete columns. 
+
+* We also removed user name, timestamps and windows.
+
+
+#### Feature Selection
+
+We selected a feature set that only included complete columns:
+
+* Determine and display out feature set, as follows:
+
+```{r}
+feature_set <- colnames(training_data[colSums(is.na(training_data)) == 0])[-(1:7)]
+model_data <- training_data[feature_set]
+feature_set
+```
+
+* We now generate the model data from our feature set, we follows:
+
+```{r}
+idx <- createDataPartition(y=model_data$classe, p=0.75, list=FALSE )
+training <- model_data[idx,]
+testing <- model_data[-idx,]
+```
+#### Apply Machine Learning Algorithms
+
+We build 5 random forests with 150 trees each:
+
+* We make use of parallel processing to build this model. 
+
+* I found several examples of how to perform parallel processing with random forests in R, this provided a great speedup.
+
+```{r}
+registerDoParallel()
+x <- training[-ncol(training)]
+y <- training$classe
+
+rf <- foreach(ntree=rep(150, 6), .combine=randomForest::combine, .packages='randomForest') %dopar% {
+randomForest(x, y, ntree=ntree) 
+}
+```
+
+### Prediction Results
+
+We also provide prediction error reports for both training and test data.
+
+```{r}
+predictions1 <- predict(rf, newdata=training)
+confusionMatrix(predictions1,training$classe)
+
+
+predictions2 <- predict(rf, newdata=testing)
+confusionMatrix(predictions2,testing$classe)
+```
+
+### Test Cases Submission
+
+This project requires the submission of the results of 20 test cases. The codes for generating the output for these test cases is as follows:
+
+```{r}
+pml_write_files = function(x){
+  n = length(x)
+  for(i in 1:n){
+    filename = paste0("./output/test_cases_id_",i,".txt")
+    write.table(x[i],file=filename,quote=FALSE,row.names=FALSE,col.names=FALSE)
+  }
+}
+
+
+x <- evaluation_data
+x <- x[feature_set[feature_set!='classe']]
+answers <- predict(rf, newdata=x)
+
+answers
+
+pml_write_files(answers)
+
+```
+
+### Conclusions 
+
+As can be seen from the prediction performance measures, such as the confusion matrix, the implmented model is very accurate. For test data, we achieved a 100% accuracy, where in fact correct all test cases were predicted correctly. We shold not that we explored various prediction models, such as the PCA, but we did not get as good of accuracy. 
+
+
